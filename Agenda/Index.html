@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estilos.css">
+    <title>Agenda</title>
+</head>
+<body>
+    <div id="contenedor" class="container">
+        <header>
+            <h3>Agenda de contactos 
+                <small> LocalStorage</small>
+            </h3>
+            <hr>
+        </header>
+
+        <form class="form-inline">
+
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">@</span>
+                <input type="text" class="form-control" placeholder="Nombre" id="nombre" aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">0034 - </span>
+                <input type="text" class="form-control" placeholder="Movil" id="movil" aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group">
+                <input type="email" class="form-control" placeholder="Email" id="email" aria-describedby="basic-addon1">
+            </div>
+
+        </form>
+        <hr/>
+
+        <div id="gbotones" class="btn-group" role="group" aria-label="...">
+            <button type="button" onclick="guardarDato()" class="btn btn-info">
+                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Guardar
+            </button>
+            <button type="button" onclick="recuperarDato()" class="btn btn-success">
+                <span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span> Recuperar
+            </button>
+            <button type="button" onclick="eliminarDato()" class="btn btn-danger">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar
+            </button>
+
+        </div>
+
+        <button type="button" onclick="eliminarTodo()" class="btn btn-danger">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Eliminar Todos
+        </button>
+        <hr>
+
+        <div id="contactos">
+        </div>
+
+    </div>
+
+    <script>
+            function guardarDato() {
+        // Capturando Variables
+        const nombre = document.getElementById("nombre").value;
+        const movil = document.getElementById("movil").value;
+        const email = document.getElementById("email").value;
+        // Generando un avatar único
+        const avatarURL = `http://www.raydelto.org/agenda.php`;
+        const datos = {
+            'movil': movil,
+            'email': email,
+            'avatarURL': avatarURL
+        };
+        // Almacenando los datos
+        localStorage.setItem(nombre, JSON.stringify(datos));
+        // Borrando los datos
+        document.getElementById("nombre").value = "";
+        document.getElementById("movil").value = "";
+        document.getElementById("email").value = "";
+        // Actualizando la lista
+        actualizarDatos();
+    }
+    function recuperarDato() {
+        // Capturando el nombre
+        const nombre = document.getElementById("nombre").value;
+        // Parseando los datos
+        let datos = localStorage.getItem(nombre);
+        datos = JSON.parse(datos);
+        // Incluyendo los datos en el HTML
+        document.getElementById("movil").value = datos.movil;
+        document.getElementById("email").value = datos.email;
+    }
+    function eliminarDato() {
+        // Capturando el nombre
+        const nombre = document.getElementById("nombre").value;
+        // Borrando el dato
+        localStorage.removeItem(nombre);
+        // Actualizando la lista
+        actualizarDatos();
+    }
+    function eliminarTodo() {
+        // Borrando todos los datos
+        localStorage.clear();
+        // Actualizando la lista
+        actualizarDatos();
+    }
+    function actualizarDatos() {
+        let elementos = "";
+        // Verificando si existen datos
+        if (localStorage.length === 0) {
+            elementos += '<div class="panel panel-default"><div class="panel-body">Vacío</div></div>';
+        } else {
+            // Enriqueciendo "elementos" con cada par de valores almacenados
+            for (let i = 0; i <= localStorage.length - 1; i++) {
+                const key = localStorage.key(i);
+                // Parseando los datos 
+                let datos = localStorage.getItem(key);
+                datos = JSON.parse(datos);
+                // Enriqueciendo los datos con HTML
+                elementos += `<div class="panel panel-default">
+                  <div class="panel-body">
+                    <div class="col-xs-3">
+                      <img src="${datos.avatarURL}">
+                    </div>
+                    <div class="col-xs-9">
+                      <p><b>${key}</b></p>
+                      <a href="tel:+34${datos.movil}"><p><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> ${datos.movil}</p></a>
+                      <a href="mailto:${datos.email}"><p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> ${datos.email}</p></a>
+                    </div>
+                  </div>
+                </div>`;
+            }
+        }
+        // Actualizando "#contactos" con los "elementos" previamente enriquecidos
+        document.getElementById('contactos').innerHTML = elementos;
+    }
+
+
+actualizarDatos();
+    </script>
+    
+</body>
+</html>
